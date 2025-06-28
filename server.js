@@ -59,7 +59,7 @@ const upload = multer({
 
 // Hiworks SMTP 설정
 const transporter = nodemailer.createTransport({
-  host: 'smtp.hiworks.com',
+  host: 'smtps.hiworks.com',
   port: 465,
   secure: true,
   auth: {
