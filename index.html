@@ -1713,7 +1713,7 @@
             // 운영 환경: https://your-server.com/api/applications
             const API_URL = window.location.hostname === 'localhost' 
                 ? 'http://localhost:3001/api/applications'
-                : 'https://getn-show-api.onrender.com'; // 실제 서버 URL로 변경
+                : 'https://getn-show-api.onrender.com/api/applications'; // 실제 서버 URL로 변경
 
             fetch(API_URL, {
                 method: 'POST',
