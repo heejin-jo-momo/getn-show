@@ -14,7 +14,6 @@
     <meta name="twitter:title" content="Get & Show : AI Build up Platform">
     <meta name="twitter:description" content="겟앤쇼는 AI 기반 Web3 플랫폼으로 차세대 디지털 서비스를 만들어갑니다.">
     <meta name="twitter:image" content="https://getnshow.github.io/getn-show/src/images/logo1.png">
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
@@ -1291,12 +1290,12 @@
                         <p>감사합니다.</p>
                         
                         <div class="job-grid">
-                            <div class="job-select-card" onclick="selectJob('프로덕트 디자이너')">프로덕트 디자이너</div>
+                            <div class="job-select-card" onclick="selectJob('Product Designer')">Product Designer</div>
                             <div class="job-select-card" onclick="selectJob('사업기획 매니저')">사업기획 매니저</div>
-                            <div class="job-select-card" onclick="selectJob('NFT WEB3 개발자')">NFT WEB3 개발자</div>
-                            <div class="job-select-card" onclick="selectJob('AI에이전트 엔지니어')">AI에이전트 엔지니어</div>
-                            <div class="job-select-card" onclick="selectJob('DevOps 엔지니어')">DevOps 엔지니어</div>
-                            <div class="job-select-card" onclick="selectJob('콘텐츠 제작/기획자')">콘텐츠 제작/기획자</div>
+                            <div class="job-select-card" onclick="selectJob('NFT & Web3 개발자')">NFT & Web3 개발자</div>
+                            <div class="job-select-card" onclick="selectJob('AI 기반 SaaS 개발자')">AI 기반 SaaS 개발자</div>
+                            <div class="job-select-card" onclick="selectJob('클라우드 인프라 엔지니어')">클라우드 인프라 엔지니어</div>
+                            <div class="job-select-card" onclick="selectJob('브랜드 콘텐츠 디자이너')">브랜드 콘텐츠 디자이너</div>
                         </div>
                     </div>
                 </div>
@@ -1440,15 +1439,15 @@
                             <div class="form-group">
                                 <label>포트폴리오</label>
                                 <div class="file-upload">
-                                    <input type="file" id="portfolio" accept=".pdf">
-                                    <label class="file-upload-label" for="portfolio">PDF 파일을 선택하세요</label>
+                                    <input type="file" id="portfolio" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip">
+                                    <label class="file-upload-label" for="portfolio">파일을 선택하세요 (PDF, Word, 이미지, ZIP)</label>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label>이력서/자기소개서</label>
                                 <div class="file-upload">
-                                    <input type="file" id="resume" accept=".pdf">
-                                    <label class="file-upload-label" for="resume">PDF 파일을 선택하세요</label>
+                                    <input type="file" id="resume" accept=".pdf,.doc,.docx">
+                                    <label class="file-upload-label" for="resume">파일을 선택하세요 (PDF, Word)</label>
                                 </div>
                             </div>
                         </div>
@@ -1465,9 +1464,6 @@
     </div>
 
     <script>
-        // EmailJS 초기화 (SMTP 사용시 필요)
-        // emailjs.init('YOUR_PUBLIC_KEY');
-
         // 전역 변수
         let selectedJob = '';
         let currentStep = 1;
@@ -1678,94 +1674,58 @@
             }
         }
 
-        // 지원서 제출
-
-        // 📌 getn.show의 index.html - 두 서버에 병렬 전송
-
-        // jobkit.kr로 전송하는 함수
-        async function sendToJobkit(formData, portfolioFile, resumeFile) {
-            try {
-                const jobkitFormData = new FormData();
-                
-                // 텍스트 데이터 복사
-                jobkitFormData.append('job', formData.job);
-                jobkitFormData.append('nameKo', formData.nameKo);
-                jobkitFormData.append('nameEn', formData.nameEn);
-                jobkitFormData.append('email', formData.email);
-                jobkitFormData.append('phone', formData.phone);
-                jobkitFormData.append('careerType', formData.careerType);
-                jobkitFormData.append('introduction', formData.introduction || '');
-                jobkitFormData.append('skills', formData.skills || '');
-                
-                if (formData.careers) {
-                    jobkitFormData.append('careers', JSON.stringify(formData.careers));
-                }
-
-                // 파일 추가
-                if (portfolioFile) {
-                    jobkitFormData.append('portfolio', portfolioFile);
-                }
-                if (resumeFile) {
-                    jobkitFormData.append('resume', resumeFile);
-                }
-
-                const response = await fetch('https://api.jobkit.kr/api/applications/submit', {
-                    method: 'POST',
-                    body: jobkitFormData
-                });
-
-                const result = await response.json();
-                
-                if (response.ok && result.success) {
-                    console.log('✅ JobKit 전송 성공:', result);
-                    return { success: true, data: result };
-                } else {
-                    console.error('❌ JobKit 전송 실패:', result);
-                    return { success: false, error: result };
-                }
-            } catch (error) {
-                console.error('❌ JobKit 네트워크 오류:', error);
-                return { success: false, error: error.message };
+        // 📌 jobkit.kr로 지원서 제출하는 메인 함수
+        async function submitApplication() {
+            // 필수 입력값 검증
+            if (!document.getElementById('nameKo').value || 
+                !document.getElementById('nameEn').value || 
+                !document.getElementById('email').value || 
+                !document.getElementById('phone').value) {
+                alert('필수 정보를 모두 입력해주세요.');
+                return;
             }
-        }
 
-// 메인 제출 함수
-// index.html의 submitApplication 함수를 다음과 같이 수정하세요:
-
-        async function submitApplication(event) {
-            event.preventDefault();
-            
-            const submitButton = document.querySelector('button[type="submit"]');
-            const originalText = submitButton.textContent;
+            const submitButton = document.querySelector('.btn-submit');
             submitButton.disabled = true;
             submitButton.textContent = '제출 중...';
 
             try {
-                // 1️⃣ 폼 데이터 수집
+                // 폼 데이터 수집
+                collectFormData();
+
+                // 직무명 매핑 (영문 → 한글)
+                const jobMapping = {
+                    'Product Designer': '프로덕트 디자이너',
+                    '사업기획 매니저': '사업기획 매니저',
+                    'NFT & Web3 개발자': 'NFT WEB3 개발자',
+                    'AI 기반 SaaS 개발자': 'AI에이전트 엔지니어',
+                    '클라우드 인프라 엔지니어': 'DevOps 엔지니어',
+                    '브랜드 콘텐츠 디자이너': '콘텐츠 제작/기획자',
+                    '풀스택 웹/앱 개발자': '풀스택 개발자',
+                    'Web3 전략 담당자': 'Web3 전략 담당자'
+                };
+
+                // FormData 생성
                 const formData = new FormData();
                 
-                // 기본 필드들
-                formData.append('name', document.getElementById('name').value);
-                formData.append('email', document.getElementById('email').value);
-                formData.append('phone', document.getElementById('phone').value);
-                formData.append('birthDate', document.getElementById('birthDate').value);
-                
-                // 경력사항 배열
-                const careers = [];
-                document.querySelectorAll('.career-item').forEach(item => {
-                    const companyName = item.querySelector('input[name="companyName"]').value;
-                    const position = item.querySelector('input[name="position"]').value;
-                    const period = item.querySelector('input[name="period"]').value;
-                    if (companyName && position && period) {
-                        careers.push({ companyName, position, period });
-                    }
-                });
-                
-                // careers를 JSON 문자열로 변환해서 추가
-                if (careers.length > 0) {
-                    formData.append('careers', JSON.stringify(careers));
+                // 필수 필드 (jobkit.kr API 형식에 맞춤)
+                formData.append('job', jobMapping[applicationData.job] || applicationData.job);
+                formData.append('nameKo', applicationData.nameKo);
+                formData.append('nameEn', applicationData.nameEn);
+                formData.append('email', applicationData.email);
+                formData.append('phone', applicationData.phone);
+                formData.append('source', 'getn.show'); // 지원 경로
+
+                // 선택 필드
+                formData.append('careerType', applicationData.careerType || '신입');
+                formData.append('introduction', applicationData.introduction || '');
+                formData.append('skills', applicationData.skills || '');
+
+                // 경력사항
+                if (applicationData.careers && applicationData.careers.length > 0) {
+                    formData.append('careers', JSON.stringify(applicationData.careers));
                 }
-                
+
                 // 파일 추가
                 const portfolioFile = document.getElementById('portfolio').files[0];
                 const resumeFile = document.getElementById('resume').files[0];
@@ -1777,28 +1737,29 @@
                     formData.append('resume', resumeFile);
                 }
 
-                // 2️⃣ jobkit.kr로 전송
+                // jobkit.kr API로 전송
                 const response = await fetch('https://api.jobkit.kr/api/applications/submit', {
                     method: 'POST',
                     body: formData
-                    // 인증 헤더 불필요 (공개 API)
                 });
 
                 const result = await response.json();
 
                 if (response.ok && result.success) {
                     // 성공 처리
-                    alert('지원서가 성공적으로 제출되었습니다!');
+                    showSuccessMessage(result.data);
                     
-                    // 폼 초기화
-                    document.getElementById('applicationForm').reset();
-                    document.getElementById('careerList').innerHTML = '';
+                    // 임시저장 데이터 삭제
+                    localStorage.removeItem('applicationDraft');
                     
-                    // 성공 페이지로 리다이렉트 (선택사항)
-                    // window.location.href = '/success.html';
+                    // 3초 후 모달 닫기
+                    setTimeout(() => {
+                        closeModal();
+                        resetForm();
+                    }, 3000);
                 } else {
                     // 에러 처리
-                    throw new Error(result.message || '지원서 제출에 실패했습니다.');
+                    handleSubmitError(result);
                 }
 
             } catch (error) {
@@ -1806,90 +1767,20 @@
                 alert(`오류가 발생했습니다: ${error.message}`);
             } finally {
                 submitButton.disabled = false;
-                submitButton.textContent = originalText;
+                submitButton.textContent = '최종제출';
             }
         }
 
-        // 폼 제출 이벤트 리스너 추가 (페이지 로드 시)
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('applicationForm');
-            if (form) {
-                form.addEventListener('submit', submitApplication);
-            }
-        });
-        // 알림 표시 함수 개선
-        function showAlert(message, type = 'info') {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type}`;
-            alertDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                max-width: 400px;
-                padding: 15px 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                z-index: 10000;
-                animation: slideIn 0.3s ease-out;
-            `;
-            
-            // 타입별 스타일
-            const styles = {
-                success: 'background: #d4edda; color: #155724; border-left: 4px solid #28a745;',
-                error: 'background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545;',
-                warning: 'background: #fff3cd; color: #856404; border-left: 4px solid #ffc107;',
-                info: 'background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8;'
-            };
-            
-            alertDiv.style.cssText += styles[type] || styles.info;
-            alertDiv.textContent = message;
-            
-            document.body.appendChild(alertDiv);
-            
-            // 5초 후 자동 제거
-            setTimeout(() => {
-                alertDiv.style.animation = 'slideOut 0.3s ease-in';
-                setTimeout(() => alertDiv.remove(), 300);
-            }, 5000);
-        }
-
-        // CSS 애니메이션 추가
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // 개발자 콘솔 로그
-        console.log('🚀 병렬 전송 시스템 활성화');
-        console.log('📧 Render 서버: EmailJS 이메일 발송');
-        console.log('💾 JobKit 서버: Aurora RDS 저장 + S3 파일');
         // 성공 메시지 표시
         function showSuccessMessage(data) {
-            const successHtml = `
-                <div class="alert alert-success" style="position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 400px;">
-                    <h4 class="alert-heading">지원 완료!</h4>
-                    <p>안녕하세요, ${data.name}님!</p>
-                    <p>${data.job} 포지션에 성공적으로 지원하셨습니다.</p>
-                    <hr>
-                    <p class="mb-0">지원번호: #${data.applicationId}</p>
-                    <p class="mb-0">지원일시: ${new Date(data.submittedAt).toLocaleString('ko-KR')}</p>
-                </div>
+            const alertEl = document.getElementById('alertMessage');
+            alertEl.innerHTML = `
+                <h4>✅ 지원이 완료되었습니다!</h4>
+                <p>지원번호: <strong>#${data.applicationId}</strong></p>
+                <p>${data.name}님, ${data.job} 포지션에 지원해주셔서 감사합니다.</p>
+                <p>빠른 시일 내에 검토 후 연락드리겠습니다.</p>
             `;
-            
-            document.body.insertAdjacentHTML('beforeend', successHtml);
-            
-            // 5초 후 자동으로 제거
-            setTimeout(() => {
-                document.querySelector('.alert-success')?.remove();
-            }, 5000);
+            alertEl.className = 'alert alert-success show';
         }
 
         // 에러 처리
@@ -1907,137 +1798,6 @@
             }
             
             alert(errorMessage);
-        }
-
-        // CORS 테스트 함수 (개발용)
-        async function testCORS() {
-            try {
-                const response = await fetch('https://api.jobkit.kr/api/applications/submit', {
-                    method: 'OPTIONS'
-                });
-                console.log('CORS 테스트 성공:', response.headers);
-            } catch (error) {
-                console.error('CORS 테스트 실패:', error);
-            }
-        }
-
-        // jobkit.kr로 데이터 전송 함수
-        async function sendToJobkit(data, portfolioFile, resumeFile) {
-            try {
-                // jobkit.kr API 엔드포인트
-                const JOBKIT_API_URL = 'https://api.jobkit.kr/api/applications';
-
-                // FormData 생성
-                const jobkitFormData = new FormData();
-                
-                // 모든 데이터 추가
-                Object.keys(data).forEach(key => {
-                    if (key === 'careers' && Array.isArray(data[key])) {
-                        jobkitFormData.append(key, JSON.stringify(data[key]));
-                    } else {
-                        jobkitFormData.append(key, data[key]);
-                    }
-                });
-
-                // 파일 추가
-                if (portfolioFile) {
-                    jobkitFormData.append('portfolio', portfolioFile);
-                }
-                if (resumeFile) {
-                    jobkitFormData.append('resume', resumeFile);
-                }
-
-                // 추가 메타데이터
-                jobkitFormData.append('source', 'getnshow.com');
-                jobkitFormData.append('timestamp', new Date().toISOString());
-
-                const response = await fetch(JOBKIT_API_URL, {
-                    method: 'POST',
-                    body: jobkitFormData,
-                    headers: {
-                        // API 키가 필요한 경우
-                        // 'Authorization': 'Bearer YOUR_API_KEY'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`jobkit.kr 응답 오류: ${response.status}`);
-                }
-
-                const result = await response.json();
-                return { success: true, result };
-
-            } catch (error) {
-                console.error('jobkit.kr 전송 실패:', error);
-                
-                // jobkit.kr 전송 실패시 이메일로 대체 전송 시도
-                try {
-                    await sendViaEmail(data, portfolioFile, resumeFile);
-                    return { success: true, method: 'email' };
-                } catch (emailError) {
-                    console.error('이메일 전송도 실패:', emailError);
-                    return { success: false, error: emailError };
-                }
-            }
-        }
-
-        // 이메일로 전송하는 대체 함수 (EmailJS 사용)
-        async function sendViaEmail(data, portfolioFile, resumeFile) {
-            // EmailJS 초기화 확인
-            if (typeof emailjs === 'undefined') {
-                throw new Error('EmailJS가 로드되지 않았습니다.');
-            }
-
-            // Base64로 파일 변환
-            const readFileAsBase64 = (file) => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result.split(',')[1]);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            };
-
-            const attachments = [];
-            
-            if (portfolioFile) {
-                const base64 = await readFileAsBase64(portfolioFile);
-                attachments.push({
-                    name: portfolioFile.name,
-                    data: base64
-                });
-            }
-            
-            if (resumeFile) {
-                const base64 = await readFileAsBase64(resumeFile);
-                attachments.push({
-                    name: resumeFile.name,
-                    data: base64
-                });
-            }
-
-            // EmailJS로 전송
-            const templateParams = {
-                to_email: 'jobkit@jobkit.kr', // jobkit.kr 수신 이메일
-                from_name: data.nameKo,
-                from_email: data.email,
-                job_position: data.job,
-                phone: data.phone,
-                career_type: data.careerType,
-                introduction: data.introduction || '없음',
-                skills: data.skills || '없음',
-                careers: data.careers ? JSON.stringify(data.careers, null, 2) : '신입',
-                attachments: JSON.stringify(attachments),
-                source: 'getnshow.com'
-            };
-
-            // EmailJS 서비스 ID, 템플릿 ID, 공개 키 설정 필요
-            return emailjs.send(
-                'YOUR_SERVICE_ID', // EmailJS 서비스 ID
-                'YOUR_TEMPLATE_ID', // EmailJS 템플릿 ID
-                templateParams,
-                'YOUR_PUBLIC_KEY' // EmailJS 공개 키
-            );
         }
 
         // 알림 표시
@@ -2061,7 +1821,9 @@
             });
             // 파일 업로드 라벨 초기화
             document.querySelectorAll('.file-upload-label').forEach(label => {
-                label.textContent = 'PDF 파일을 선택하세요';
+                label.textContent = label.getAttribute('for') === 'portfolio' 
+                    ? '파일을 선택하세요 (PDF, Word, 이미지, ZIP)' 
+                    : '파일을 선택하세요 (PDF, Word)';
                 label.style.color = '#999';
             });
         }
@@ -2143,6 +1905,11 @@
                 }
             });
         });
+
+        // 개발자 콘솔 로그
+        console.log('🚀 JobKit 연동 시스템 활성화');
+        console.log('💾 JobKit 서버: Aurora RDS 저장 + S3 파일 업로드');
+        console.log('📍 API Endpoint: https://api.jobkit.kr/api/applications/submit');
     </script>
 </body>
 </html>
